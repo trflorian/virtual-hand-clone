@@ -25,7 +25,7 @@ func _parse_hands_from_packet(data: PackedByteArray) -> Array:
 		print("JSON Parse Error: %s in %s at line %d" % [json.get_error_message(), json_string, json.get_error_line()])
 		return []
 
-func _create_new_hand():
+func _create_new_hand() -> void:
 	var hand_instance := Hand.new()
 	add_child(hand_instance)
 	hands.append(hand_instance)
@@ -45,6 +45,7 @@ func _process(delta: float) -> void:
 		
 		if len_diff < 0:
 			for i in range(-len_diff):
+				# TODO: add hand identifier and track same hand
 				var last_hand: Hand = hands.pop_back()
 				last_hand.queue_free()
 		
