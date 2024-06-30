@@ -1,0 +1,34 @@
+[gd_scene load_steps=6 format=3 uid="uid://bifbs5sm3l0if"]
+
+[ext_resource type="Script" path="res://virtual_hand_clone.gd" id="1_vbggk"]
+[ext_resource type="PackedScene" uid="uid://b03ewirciycji" path="res://landmark_sphere.tscn" id="2_hv5ba"]
+
+[sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_3lt1c"]
+sky_horizon_color = Color(0.64625, 0.65575, 0.67075, 1)
+ground_horizon_color = Color(0.64625, 0.65575, 0.67075, 1)
+
+[sub_resource type="Sky" id="Sky_d7h00"]
+sky_material = SubResource("ProceduralSkyMaterial_3lt1c")
+
+[sub_resource type="Environment" id="Environment_jiyc6"]
+background_mode = 1
+background_color = Color(0.5518, 0.75472, 0.89, 1)
+sky = SubResource("Sky_d7h00")
+ambient_light_source = 3
+tonemap_mode = 2
+
+[node name="World" type="Node3D"]
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="."]
+environment = SubResource("Environment_jiyc6")
+
+[node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
+transform = Transform3D(-0.866025, -0.433013, 0.25, 0, 0.5, 0.866025, -0.5, 0.75, -0.433013, 0, 0, 0)
+shadow_enabled = true
+
+[node name="Camera3D" type="Camera3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 8)
+
+[node name="VirtualHandClone" type="Node3D" parent="."]
+script = ExtResource("1_vbggk")
+landmark_sphere = ExtResource("2_hv5ba")
