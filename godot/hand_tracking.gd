@@ -30,7 +30,7 @@ func _create_new_hand() -> void:
 	add_child(hand_instance)
 	hands.append(hand_instance)
 
-func _process(delta: float) -> void:
+func _process(_delta: float) -> void:
 	server.poll()
 	if server.is_connection_available():
 		var peer = server.take_connection()
