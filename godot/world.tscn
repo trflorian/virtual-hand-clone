@@ -1,6 +1,6 @@
 [gd_scene load_steps=5 format=3 uid="uid://bifbs5sm3l0if"]
 
-[ext_resource type="Script" path="res://virtual_hand_clone.gd" id="1_vbggk"]
+[ext_resource type="Script" path="res://hand_tracking.gd" id="1_vbggk"]
 
 [sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_3lt1c"]
 sky_horizon_color = Color(0.64625, 0.65575, 0.67075, 1)
@@ -28,5 +28,5 @@ shadow_enabled = true
 [node name="Camera3D" type="Camera3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 4)
 
-[node name="VirtualHandClone" type="Node3D" parent="."]
+[node name="HandTracking" type="Node3D" parent="."]
 script = ExtResource("1_vbggk")
