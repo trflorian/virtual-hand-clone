@@ -24,7 +24,10 @@ var type: LandmarkType
 var _material: Material
 var _touching_tips: int = 0
 
+var target: Vector3
+
 func _ready() -> void:
+	target = global_position
 	_material = StandardMaterial3D.new()
 	sphere.set_surface_override_material(0, _material)
 	body_entered.connect(_on_body_entered)
@@ -33,6 +36,10 @@ func _ready() -> void:
 func _process(_delta: float) -> void:
 	if highlight_touches:
 		_material.albedo_color = Color.RED if _touching_tips > 0 else Color.WHITE
+
+func _physics_process(delta: float) -> void:
+	global_position = lerp(global_position, target, 0.2)
+	move_and_collide((target - global_position))
 
 func is_interaction(lm1: HandLandmark, lm2: HandLandmark) -> bool:
 	if lm1.type != LandmarkType.TIP or lm2.type != LandmarkType.TIP:
@@ -58,11 +65,15 @@ func from_landmark_id(id: int) -> void:
 		finger = Finger.PINKY
 
 func _on_body_entered(body: Node) -> void:
+	if not body is HandLandmark:
+		return
 	var other_landmark = body as HandLandmark
 	if is_interaction(self, other_landmark):
 		_touching_tips += 1
 	
 func _on_body_exited(body: Node) -> void:
+	if not body is HandLandmark:
+		return
 	var other_landmark = body as HandLandmark
 	if is_interaction(self, other_landmark):
 		_touching_tips -= 1

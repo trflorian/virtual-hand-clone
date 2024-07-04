@@ -15,7 +15,7 @@ const HAND_LINES_MAPPING = [
 
 var landmark_sphere: PackedScene = preload("res://hand_landmark.tscn")
 
-var hand_landmarks: Array[Node3D] = []
+var hand_landmarks: Array[HandLandmark] = []
 var hand_lines: Array[MeshInstance3D] = []
 
 func _ready() -> void:
@@ -47,12 +47,22 @@ func _update_hand_lines() -> void:
 
 func update_hand_landmark(landmark_id: int, landmark_pos: Vector3) -> void:
 	var lm = hand_landmarks[landmark_id]
-	lm.global_position = lerp(lm.global_position, landmark_pos, 0.5)
+	lm.target = landmark_pos
+	#lm.global_position = lerp(lm.global_position, landmark_pos, 0.2)
 
 func parse_hand_landmarks_from_data(hand_data: Array) -> void:
+	var z_bias = 0.0
 	for lm_id in range(NUM_LANDMARKS):
 		var lm_data = hand_data[lm_id]
 		var pos_cam = Vector3(lm_data[0], lm_data[1], lm_data[2]) - Vector3.ONE * 0.5
 		var pos_xyz = Vector3(-pos_cam[0], -pos_cam[1], pos_cam[2]) * HAND_SCALE
 		#pos_xyz.z /= scale
+		#z_bias += pos_xyz.z / NUM_LANDMARKS
+		pos_xyz.z += 17
 		update_hand_landmark(lm_id, pos_xyz)
+	#print("-------------")
+	##print(z_bias)
+	#for lm_id in range(NUM_LANDMARKS):
+		#print(hand_landmarks[lm_id].global_position.z )
+		#hand_landmarks[lm_id].global_position.z -= z_bias
+		#print(hand_landmarks[lm_id].global_position.z )

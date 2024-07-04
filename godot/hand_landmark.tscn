@@ -9,7 +9,10 @@ radius = 0.7
 [sub_resource type="SphereMesh" id="SphereMesh_wshx6"]
 
 [node name="HandLandmark" type="RigidBody3D" node_paths=PackedStringArray("sphere")]
+collision_layer = 2
 gravity_scale = 0.0
+freeze = true
+freeze_mode = 1
 max_contacts_reported = 1
 contact_monitor = true
 script = ExtResource("1_e36bc")
