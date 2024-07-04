@@ -1,4 +1,4 @@
-extends Area3D
+extends RigidBody3D
 
 class_name HandLandmark
 
@@ -15,6 +15,7 @@ const FINGER_TIPS = [
 ]
 
 @export var sphere: MeshInstance3D
+@export var highlight_touches: bool
 
 var landmark_id: int
 var finger: Finger
@@ -26,11 +27,12 @@ var _touching_tips: int = 0
 func _ready() -> void:
 	_material = StandardMaterial3D.new()
 	sphere.set_surface_override_material(0, _material)
-	area_entered.connect(_on_area_entered)
-	area_exited.connect(_on_area_exited)
+	body_entered.connect(_on_body_entered)
+	body_exited.connect(_on_body_exited)
 
 func _process(_delta: float) -> void:
-	_material.albedo_color = Color.RED if _touching_tips > 0 else Color.WHITE
+	if highlight_touches:
+		_material.albedo_color = Color.RED if _touching_tips > 0 else Color.WHITE
 
 func is_interaction(lm1: HandLandmark, lm2: HandLandmark) -> bool:
 	if lm1.type != LandmarkType.TIP or lm2.type != LandmarkType.TIP:
@@ -55,12 +57,12 @@ func from_landmark_id(id: int) -> void:
 	else:
 		finger = Finger.PINKY
 
-func _on_area_entered(area: Area3D) -> void:
-	var other_landmark = area as HandLandmark
+func _on_body_entered(body: Node) -> void:
+	var other_landmark = body as HandLandmark
 	if is_interaction(self, other_landmark):
 		_touching_tips += 1
 	
-func _on_area_exited(area: Area3D) -> void:
-	var other_landmark = area as HandLandmark
+func _on_body_exited(body: Node) -> void:
+	var other_landmark = body as HandLandmark
 	if is_interaction(self, other_landmark):
 		_touching_tips -= 1

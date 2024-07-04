@@ -8,7 +8,10 @@ radius = 0.7
 
 [sub_resource type="SphereMesh" id="SphereMesh_wshx6"]
 
-[node name="HandLandmark" type="Area3D" node_paths=PackedStringArray("sphere")]
+[node name="HandLandmark" type="RigidBody3D" node_paths=PackedStringArray("sphere")]
+gravity_scale = 0.0
+max_contacts_reported = 1
+contact_monitor = true
 script = ExtResource("1_e36bc")
 sphere = NodePath("Sphere")
 
