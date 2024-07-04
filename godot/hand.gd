@@ -13,7 +13,7 @@ const HAND_LINES_MAPPING = [
 	[0, 17], [13, 17], [17, 18], [18, 19], [19, 20], # Pinky
 ]
 
-var landmark_sphere: PackedScene = preload("res://landmark_sphere.tscn")
+var landmark_sphere: PackedScene = preload("res://hand_landmark.tscn")
 
 var hand_landmarks: Array[Node3D] = []
 var hand_lines: Array[MeshInstance3D] = []
@@ -27,7 +27,8 @@ func _process(_delta: float) -> void:
 
 func _create_hand_landmark_spheres() -> void:
 	for i in range(NUM_LANDMARKS):
-		var landmark_instance = landmark_sphere.instantiate()
+		var landmark_instance = landmark_sphere.instantiate() as HandLandmark
+		landmark_instance.from_landmark_id(i)
 		add_child(landmark_instance)
 		hand_landmarks.append(landmark_instance)
 
