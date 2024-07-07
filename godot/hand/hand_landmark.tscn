@@ -1,6 +1,6 @@
 [gd_scene load_steps=4 format=3 uid="uid://b03ewirciycji"]
 
-[ext_resource type="Script" path="res://hand_landmark.gd" id="1_e36bc"]
+[ext_resource type="Script" path="res://hand/hand_landmark.gd" id="1_v35cl"]
 
 [sub_resource type="CylinderShape3D" id="CylinderShape3D_rj0g2"]
 height = 1.5
@@ -15,7 +15,7 @@ freeze = true
 freeze_mode = 1
 max_contacts_reported = 1
 contact_monitor = true
-script = ExtResource("1_e36bc")
+script = ExtResource("1_v35cl")
 sphere = NodePath("Sphere")
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="."]

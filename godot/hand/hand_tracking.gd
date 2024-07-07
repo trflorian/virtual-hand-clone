@@ -14,6 +14,11 @@ func _ready() -> void:
 	left_hand = _create_new_hand()
 	right_hand = _create_new_hand()
 
+func _create_new_hand() -> Hand:
+	var hand_instance := Hand.new()
+	add_child(hand_instance)
+	return hand_instance
+
 func _parse_hands_from_packet(data: PackedByteArray) -> Dictionary:
 	var json_string = data.get_string_from_utf8()
 	var json = JSON.new()
@@ -25,11 +30,6 @@ func _parse_hands_from_packet(data: PackedByteArray) -> Dictionary:
 	assert(typeof(data_received) == TYPE_DICTIONARY)
 	
 	return data_received
-
-func _create_new_hand() -> Hand:
-	var hand_instance := Hand.new()
-	add_child(hand_instance)
-	return hand_instance
 
 func _process(_delta: float) -> void:
 	server.poll()

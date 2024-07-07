@@ -1,7 +1,6 @@
-[gd_scene load_steps=10 format=3 uid="uid://bifbs5sm3l0if"]
+[gd_scene load_steps=5 format=3 uid="uid://bifbs5sm3l0if"]
 
-[ext_resource type="Script" path="res://hand_tracking.gd" id="1_vbggk"]
-[ext_resource type="Script" path="res://box_respawn.gd" id="2_vqfv7"]
+[ext_resource type="Script" path="res://hand/hand_tracking.gd" id="1_vbggk"]
 
 [sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_3lt1c"]
 sky_horizon_color = Color(0.64625, 0.65575, 0.67075, 1)
@@ -17,21 +16,6 @@ sky = SubResource("Sky_d7h00")
 ambient_light_source = 3
 tonemap_mode = 2
 
-[sub_resource type="PhysicsMaterial" id="PhysicsMaterial_jk7l1"]
-bounce = 0.2
-
-[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_65cfg"]
-albedo_color = Color(1, 0.362, 0.34, 1)
-metallic_specular = 1.0
-roughness = 0.0
-
-[sub_resource type="BoxMesh" id="BoxMesh_bcq56"]
-material = SubResource("StandardMaterial3D_65cfg")
-size = Vector3(5, 5, 5)
-
-[sub_resource type="BoxShape3D" id="BoxShape3D_euh8a"]
-size = Vector3(5, 5, 5)
-
 [node name="World" type="Node3D"]
 
 [node name="WorldEnvironment" type="WorldEnvironment" parent="."]
@@ -46,17 +30,3 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 17)
 
 [node name="HandTracking" type="Node3D" parent="."]
 script = ExtResource("1_vbggk")
-
-[node name="Box" type="RigidBody3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 15, 0)
-collision_mask = 3
-axis_lock_linear_z = true
-mass = 0.1
-physics_material_override = SubResource("PhysicsMaterial_jk7l1")
-script = ExtResource("2_vqfv7")
-
-[node name="MeshInstance3D" type="MeshInstance3D" parent="Box"]
-mesh = SubResource("BoxMesh_bcq56")
-
-[node name="CollisionShape3D" type="CollisionShape3D" parent="Box"]
-shape = SubResource("BoxShape3D_euh8a")

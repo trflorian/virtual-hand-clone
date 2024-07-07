@@ -17,7 +17,7 @@ config/icon="res://icon.svg"
 
 [autoload]
 
-Draw3D="*res://Draw3D.gd"
+LineRenderer="*res://utils/line_renderer.gd"
 
 [rendering]
 

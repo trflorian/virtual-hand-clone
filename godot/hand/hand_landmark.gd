@@ -39,7 +39,7 @@ func _process(_delta: float) -> void:
 
 func _physics_process(delta: float) -> void:
 	global_position = lerp(global_position, target, 0.3)
-	move_and_collide((target - global_position))
+	#move_and_collide((target - global_position) * delta * 10)
 
 func is_interaction(lm1: HandLandmark, lm2: HandLandmark) -> bool:
 	if lm1.type != LandmarkType.TIP or lm2.type != LandmarkType.TIP:
