@@ -1,2 +1,0 @@
-mediapipe
-opencv-python
