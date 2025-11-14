@@ -58,7 +58,7 @@ def extract_left_right_hand_coords(
 
     if multi_hand_landmarks is None:
         return hand_coords
-    
+
     for hand_type in ["left", "right"]:
         hand_idx = extract_hand_type_index(multi_handedness, hand_type)
 
@@ -80,7 +80,7 @@ def run_hand_tracking_server(
 ) -> None:
     """
     Run the hand tracking which sends the hand coordinates via UDP.
-    
+
     Args:
         server_ip: The IP address of the server
         server_port: The port number of the server
@@ -98,7 +98,6 @@ def run_hand_tracking_server(
         min_detection_confidence=0.5,
         min_tracking_confidence=0.5,
     ) as hands:
-
         while cap.isOpened():
             # Get a frame from the webcam
             ret, frame = cap.read()
