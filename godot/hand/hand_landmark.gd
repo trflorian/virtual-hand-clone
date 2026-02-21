@@ -37,7 +37,7 @@ func _process(_delta: float) -> void:
 	if highlight_touches:
 		_material.albedo_color = Color.RED if _touching_tips > 0 else Color.WHITE
 
-func _physics_process(delta: float) -> void:
+func _physics_process(_delta: float) -> void:
 	global_position = lerp(global_position, target, 0.3)
 	#move_and_collide((target - global_position) * delta * 10)
 
