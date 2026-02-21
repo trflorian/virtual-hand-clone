@@ -1,40 +1,53 @@
 import json
 import socket
-
-from typing import Optional, Sequence, Literal
+import time
+from pathlib import Path
+from typing import Literal, Optional, Sequence
 
 import cv2
+import mediapipe as mp
 
-import mediapipe.python.solutions.hands as mp_hands
-import mediapipe.python.solutions.drawing_utils as mp_drawing
-import mediapipe.python.solutions.drawing_styles as mp_drawing_styles
+mp_hands = mp.tasks.vision.HandLandmarksConnections
+mp_drawing = mp.tasks.vision.drawing_utils
+mp_drawing_styles = mp.tasks.vision.drawing_styles
+BaseOptions = mp.tasks.BaseOptions
+HandLandmarker = mp.tasks.vision.HandLandmarker
+HandLandmarkerOptions = mp.tasks.vision.HandLandmarkerOptions
+VisionRunningMode = mp.tasks.vision.RunningMode
 
 
 def extract_hand_type_index(
-    multi_handedness: Sequence,
+    hand_landmarks: list,
+    handedness: list,
     hand_type: Literal["left", "right"],
 ) -> int:
     """
     Extract the index of the hand with the specified type from the multi-handedness list
 
     Args:
-        multi_handedness: List of hand classifications for each hand
+        handedness: List of hand classifications for each hand [[Category(index=0, score=0.9739, display_name='Right', category_name='Right')]]
         hand_type: The type of hand to extract the index for
 
     Returns:
         Index of the hand with the specified type in the multi-handedness list. Returns -1 if the hand type is not found
     """
-    hand_classification = [hand.classification[0] for hand in multi_handedness]
+
+    hands_best_classes = []
+    for hand_classifications in handedness:
+        sorted_classifications = sorted(hand_classifications, key=lambda c: c.score)
+        hands_best_classes.append(sorted_classifications[0])
+
+    argmax(hand_classifications)
 
     hands = filter(
-        lambda x: x.label.lower() == hand_type and x.score > 0.5, hand_classification
+        lambda x: x.category_name.lower() == hand_type and x.score > 0.5, handedness
     )
     hands = sorted(hands, key=lambda x: x.score, reverse=True)
 
     if len(hands) == 0:
         return -1
 
-    return hand_classification.index(hands[0])
+    return handedness.index(hands[0])
 
 
 def extract_left_right_hand_coords(
@@ -91,38 +104,67 @@ def run_hand_tracking_server(
     # Open the webcam video feed
     cap = cv2.VideoCapture(0)
 
-    # Create the hand-tracking model
-    with mp_hands.Hands(
-        model_complexity=0,
-        max_num_hands=2,
-        min_detection_confidence=0.5,
-        min_tracking_confidence=0.5,
-    ) as hands:
+    # Create a hand landmarker instance with the video mode:
+    model_path = Path(__file__).parent / "hand_landmarker.task"
+    options = HandLandmarkerOptions(
+        base_options=BaseOptions(model_asset_path=str(model_path)),
+        running_mode=VisionRunningMode.VIDEO,
+        num_hands=2,
+        min_hand_detection_confidence=0.2,
+        min_tracking_confidence=0.2,
+    )
+    with HandLandmarker.create_from_options(options) as landmarker:
         while cap.isOpened():
             # Get a frame from the webcam
             ret, frame = cap.read()
             if not ret:
                 print("Error: failed to capture image")
                 break
+            frame_timestamp_ms = int(time.time() * 1000)
 
-            # Check the frame for hands. Hnad-tracking requires RGB images, while OpenCV captures in BGR
-            frame_rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
-            results = hands.process(frame_rgb)
+            # Check the frame for hands
+            mp_image = mp.Image(image_format=mp.ImageFormat.SRGB, data=frame)
+            results = landmarker.detect_for_video(mp_image, frame_timestamp_ms)
 
-            # Extract the hand coordinates from the results into a dictionary:
-            # hand_coords = {"left": [[x, y, z], ...], "right": [[x, y, z], ...]}
-            hand_coords = extract_left_right_hand_coords(
-                results.multi_hand_landmarks,
-                results.multi_handedness,
+            hand_candidates = sorted(
+                [
+                    (i, hd.score, hd.category_name, [(hl.x, hl.y, hl.z) for hl in hls])
+                    for i, (hls, hds) in enumerate(zip(results.hand_landmarks, results.handedness))
+                    for hd in hds
+                ],
+                key=lambda x: x[1],
             )
+
+            left_hand = None
+            right_hand = None
+            classified_hands = set()
+
+            while len(hand_candidates) > 0:
+                i, _, category, landmarks = hand_candidates.pop(0)
+
+                if i in classified_hands:
+                    continue
+
+                if category == "Left" and left_hand is None:
+                    left_hand = landmarks
+                    classified_hands.add(i)
+                
+                if category == "Right" and right_hand is None:
+                    right_hand = landmarks
+                    classified_hands.add(i)
+
+            hand_coords = {
+                "left": left_hand,
+                "right": right_hand,
+            }
 
             # Send the hand coordinates to the client
             encoded_coords = json.dumps(hand_coords)
             client_socket.sendto(encoded_coords.encode(), (server_ip, server_port))
 
             # Draw the hand landmarks on the frame
-            if results.multi_hand_landmarks:
-                for hand_landmarks in results.multi_hand_landmarks:
+            if results.hand_landmarks:
+                for hand_landmarks in results.hand_landmarks:
                     mp_drawing.draw_landmarks(
                         frame,
                         hand_landmarks,
