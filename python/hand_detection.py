@@ -2,7 +2,6 @@ import json
 import socket
 import time
 from pathlib import Path
-from typing import Literal, Optional, Sequence
 
 import cv2
 import mediapipe as mp
@@ -14,77 +13,6 @@ BaseOptions = mp.tasks.BaseOptions
 HandLandmarker = mp.tasks.vision.HandLandmarker
 HandLandmarkerOptions = mp.tasks.vision.HandLandmarkerOptions
 VisionRunningMode = mp.tasks.vision.RunningMode
-
-
-def extract_hand_type_index(
-    hand_landmarks: list,
-    handedness: list,
-    hand_type: Literal["left", "right"],
-) -> int:
-    """
-    Extract the index of the hand with the specified type from the multi-handedness list
-
-    Args:
-        handedness: List of hand classifications for each hand [[Category(index=0, score=0.9739, display_name='Right', category_name='Right')]]
-        hand_type: The type of hand to extract the index for
-
-    Returns:
-        Index of the hand with the specified type in the multi-handedness list. Returns -1 if the hand type is not found
-    """
-
-    hands_best_classes = []
-    for hand_classifications in handedness:
-        sorted_classifications = sorted(hand_classifications, key=lambda c: c.score)
-        hands_best_classes.append(sorted_classifications[0])
-
-    argmax(hand_classifications)
-
-    hands = filter(
-        lambda x: x.category_name.lower() == hand_type and x.score > 0.5, handedness
-    )
-    hands = sorted(hands, key=lambda x: x.score, reverse=True)
-
-    if len(hands) == 0:
-        return -1
-
-    return handedness.index(hands[0])
-
-
-def extract_left_right_hand_coords(
-    multi_hand_landmarks: Optional[Sequence],
-    multi_handedness: Sequence,
-) -> dict:
-    """
-    Extract the coordinates of the left and right hands from the multi-hand landmarks
-
-    Args:
-        multi_hand_landmarks: List of landmarks for each hand
-        multi_handedness: List of hand classifications for each hand
-
-    Returns:
-        Dictionary containing the coordinates of the left and right hands
-    """
-    hand_coords = {
-        "left": None,
-        "right": None,
-    }
-
-    if multi_hand_landmarks is None:
-        return hand_coords
-
-    for hand_type in ["left", "right"]:
-        hand_idx = extract_hand_type_index(multi_handedness, hand_type)
-
-        if hand_idx == -1:
-            continue
-
-        hand_lms = multi_hand_landmarks[hand_idx]
-
-        hand_coords[hand_type] = [
-            [landmark.x, landmark.y, landmark.z] for landmark in hand_lms.landmark
-        ]
-
-    return hand_coords
 
 
 def run_hand_tracking_server(
