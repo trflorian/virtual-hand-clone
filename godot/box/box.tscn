@@ -1,6 +1,6 @@
-[gd_scene load_steps=6 format=3 uid="uid://dr3i5ngnm6k3y"]
+[gd_scene format=3 uid="uid://dr3i5ngnm6k3y"]
 
-[ext_resource type="Script" path="res://box/box_respawn.gd" id="1_ewp13"]
+[ext_resource type="Script" uid="uid://ckie3f242xxal" path="res://box/box_respawn.gd" id="1_ewp13"]
 
 [sub_resource type="PhysicsMaterial" id="PhysicsMaterial_jk7l1"]
 bounce = 0.2
@@ -17,17 +17,15 @@ size = Vector3(5, 5, 5)
 [sub_resource type="BoxShape3D" id="BoxShape3D_euh8a"]
 size = Vector3(5, 5, 5)
 
-[node name="Box" type="RigidBody3D"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 15, 0)
-visible = false
+[node name="Box" type="RigidBody3D" unique_id=208234410]
 collision_mask = 3
 axis_lock_linear_z = true
 mass = 0.1
 physics_material_override = SubResource("PhysicsMaterial_jk7l1")
 script = ExtResource("1_ewp13")
 
-[node name="MeshInstance3D" type="MeshInstance3D" parent="."]
+[node name="MeshInstance3D" type="MeshInstance3D" parent="." unique_id=1347553541]
 mesh = SubResource("BoxMesh_bcq56")
 
-[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+[node name="CollisionShape3D" type="CollisionShape3D" parent="." unique_id=913945407]
 shape = SubResource("BoxShape3D_euh8a")

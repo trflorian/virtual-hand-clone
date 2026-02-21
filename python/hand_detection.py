@@ -5,6 +5,7 @@ from pathlib import Path
 
 import cv2
 import mediapipe as mp
+import numpy as np
 
 mp_hands = mp.tasks.vision.HandLandmarksConnections
 mp_drawing = mp.tasks.vision.drawing_utils
@@ -41,6 +42,11 @@ def run_hand_tracking_server(
         min_hand_detection_confidence=0.2,
         min_tracking_confidence=0.2,
     )
+
+    # fade in/out landmarks for video
+    show_landmarks = True
+    alpha = 1.0
+
     with HandLandmarker.create_from_options(options) as landmarker:
         while cap.isOpened():
             # Get a frame from the webcam
@@ -48,6 +54,7 @@ def run_hand_tracking_server(
             if not ret:
                 print("Error: failed to capture image")
                 break
+            frame_annotated = frame.copy()
             frame_timestamp_ms = int(time.time() * 1000)
 
             # Check the frame for hands
@@ -94,16 +101,31 @@ def run_hand_tracking_server(
             if results.hand_landmarks:
                 for hand_landmarks in results.hand_landmarks:
                     mp_drawing.draw_landmarks(
-                        frame,
+                        frame_annotated,
                         hand_landmarks,
                         mp_hands.HAND_CONNECTIONS,
                         landmark_drawing_spec=mp_drawing_styles.get_default_hand_landmarks_style(),
                         connection_drawing_spec=mp_drawing_styles.get_default_hand_connections_style(),
                     )
+            
+            if show_landmarks and alpha < 1.0:
+                alpha += 0.05
+            elif not show_landmarks and alpha > 0.0:
+                alpha -= 0.05
+            
+            alpha = np.clip(alpha, 0.0, 1.0)
+            
+            frame = frame.astype(np.float32)
+            frame_annotated = frame_annotated.astype(np.float32)
+            frame_final = alpha * frame_annotated + (1 - alpha) * frame
+            frame_final = frame_final.astype(np.uint8)
 
-            cv2.imshow("Hand Tracking", cv2.flip(frame, 1))
-            if cv2.waitKey(1) & 0xFF == ord("q"):
+            cv2.imshow("Hand Tracking", cv2.flip(frame_final, 1))
+            key = cv2.waitKey(1) & 0xFF
+            if key == ord("q"):
                 break
+            if key == ord(" "):
+                show_landmarks = not show_landmarks
 
     cv2.destroyAllWindows()
 

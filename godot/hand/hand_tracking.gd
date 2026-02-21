@@ -7,12 +7,18 @@ var server: UDPServer
 var left_hand: Hand
 var right_hand: Hand
 
+@export var show_left_hand: bool = true
+@export var show_right_hand: bool = true
+
 func _ready() -> void:
 	server = UDPServer.new()
 	server.listen(PORT)
 	
-	left_hand = _create_new_hand()
-	right_hand = _create_new_hand()
+	if show_left_hand:
+		left_hand = _create_new_hand()
+		
+	if show_right_hand:
+		right_hand = _create_new_hand()
 
 func _create_new_hand() -> Hand:
 	var hand_instance := Hand.new()
@@ -38,8 +44,8 @@ func _process(_delta: float) -> void:
 		var data = peer.get_packet()
 		var hands_data = _parse_hands_from_packet(data)
 		
-		if hands_data["left"] != null:
+		if hands_data["left"] != null and show_left_hand:
 			left_hand.parse_hand_landmarks_from_data(hands_data["left"])
 			
-		if hands_data["right"] != null:
+		if hands_data["right"] != null and show_right_hand:
 			right_hand.parse_hand_landmarks_from_data(hands_data["right"])

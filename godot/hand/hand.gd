@@ -54,5 +54,5 @@ func parse_hand_landmarks_from_data(hand_data: Array) -> void:
 		var lm_data = hand_data[lm_id]
 		var pos_cam = Vector3(lm_data[0], lm_data[1], lm_data[2]) - Vector3.ONE * 0.5
 		var pos_xyz = Vector3(-pos_cam[0], -pos_cam[1], pos_cam[2]) * HAND_SCALE
-		pos_xyz.z += 12
+		pos_xyz.z += 16
 		_update_hand_landmark(lm_id, pos_xyz)
