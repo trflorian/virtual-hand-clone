@@ -10,18 +10,30 @@ func line(pos1: Vector3, pos2: Vector3, color = Color.WHITE_SMOKE) -> MeshInstan
 	return mesh_instance
 
 func edit_line(mesh_instance: MeshInstance3D, pos1: Vector3, pos2: Vector3, color = Color.WHITE_SMOKE) -> MeshInstance3D:
-	var immediate_mesh := ImmediateMesh.new()
-	var material := ORMMaterial3D.new()
+	var immediate_mesh: ImmediateMesh = mesh_instance.mesh as ImmediateMesh
 	
-	mesh_instance.mesh = immediate_mesh
-	mesh_instance.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+	# 1. Reuse or Create the Mesh
+	if not immediate_mesh:
+		immediate_mesh = ImmediateMesh.new()
+		mesh_instance.mesh = immediate_mesh
+		mesh_instance.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+
+	# 2. Reuse or Create the Material
+	var material: ORMMaterial3D
+	if immediate_mesh.get_surface_count() > 0:
+		material = immediate_mesh.surface_get_material(0) as ORMMaterial3D
 	
+	if not material:
+		material = ORMMaterial3D.new()
+		material.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
+
+	# 3. Update Material Color and Redraw
+	material.albedo_color = color
+	
+	immediate_mesh.clear_surfaces() # Clear previous frame's line
 	immediate_mesh.surface_begin(Mesh.PRIMITIVE_LINES, material)
 	immediate_mesh.surface_add_vertex(pos1)
 	immediate_mesh.surface_add_vertex(pos2)
 	immediate_mesh.surface_end()
-	
-	material.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
-	material.albedo_color = color
 	
 	return mesh_instance

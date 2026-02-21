@@ -1,6 +1,6 @@
 # Virtual Hand Clone
 
-[![Godot 4.5](https://img.shields.io/badge/Godot-4.5-478CBF?style=flat&logo=godot%20engine&logoColor=white)](https://godotengine.org)
+[![Godot 4.6](https://img.shields.io/badge/Godot-4.6-478CBF?style=flat&logo=godot%20engine&logoColor=white)](https://godotengine.org)
 [![Python](https://img.shields.io/badge/python-3.12-blue.svg)](https://www.python.org/downloads/release/python-3120/)
 [![uv](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/uv/main/assets/badge/v0.json)](https://github.com/astral-sh/uv)
 [![Ruff](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/ruff/main/assets/badge/v2.json)](https://github.com/astral-sh/ruff)
@@ -28,7 +28,7 @@ The identified hand landmark coordinates are then packaged and sent via UDP to [
 ## 🖥️ Versions
 
 - Python 3.12
-- Godot v4.5
+- Godot v4.6
 
 ## 🎬 Demos
 ### Single Hand Tracking

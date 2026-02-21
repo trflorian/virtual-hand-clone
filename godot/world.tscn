@@ -1,6 +1,6 @@
-[gd_scene load_steps=5 format=3 uid="uid://bifbs5sm3l0if"]
+[gd_scene format=3 uid="uid://bifbs5sm3l0if"]
 
-[ext_resource type="Script" path="res://hand/hand_tracking.gd" id="1_vbggk"]
+[ext_resource type="Script" uid="uid://bibidn0ysjs6e" path="res://hand/hand_tracking.gd" id="1_vbggk"]
 
 [sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_3lt1c"]
 sky_horizon_color = Color(0.64625, 0.65575, 0.67075, 1)
@@ -16,17 +16,17 @@ sky = SubResource("Sky_d7h00")
 ambient_light_source = 3
 tonemap_mode = 2
 
-[node name="World" type="Node3D"]
+[node name="World" type="Node3D" unique_id=390079430]
 
-[node name="WorldEnvironment" type="WorldEnvironment" parent="."]
+[node name="WorldEnvironment" type="WorldEnvironment" parent="." unique_id=343783008]
 environment = SubResource("Environment_jiyc6")
 
-[node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
+[node name="DirectionalLight3D" type="DirectionalLight3D" parent="." unique_id=879703477]
 transform = Transform3D(-0.866025, -0.433013, 0.25, 0, 0.5, 0.866025, -0.5, 0.75, -0.433013, 0, 0, 0)
 shadow_enabled = true
 
-[node name="Camera3D" type="Camera3D" parent="."]
+[node name="Camera3D" type="Camera3D" parent="." unique_id=1431584922]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 17)
 
-[node name="HandTracking" type="Node3D" parent="."]
+[node name="HandTracking" type="Node3D" parent="." unique_id=146020620]
 script = ExtResource("1_vbggk")
