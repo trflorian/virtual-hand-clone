@@ -1,7 +1,7 @@
 # Virtual Hand Clone
 
 [![Godot 4.6](https://img.shields.io/badge/Godot-4.6-478CBF?style=flat&logo=godot%20engine&logoColor=white)](https://godotengine.org)
-[![Python](https://img.shields.io/badge/python-3.12-blue.svg)](https://www.python.org/downloads/release/python-3120/)
+[![Python](https://img.shields.io/badge/python-3.13-blue.svg)](https://www.python.org/downloads/release/python-3133/)
 [![uv](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/uv/main/assets/badge/v0.json)](https://github.com/astral-sh/uv)
 [![Ruff](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/ruff/main/assets/badge/v2.json)](https://github.com/astral-sh/ruff)
 [![License MIT](https://img.shields.io/github/license/trflorian/virtual-hand-clone)](https://opensource.org/licenses/MIT)
