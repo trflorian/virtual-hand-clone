@@ -13,11 +13,15 @@ The identified hand landmark coordinates are then packaged and sent via UDP to [
 ![godot_animation](https://github.com/trflorian/virtual-hand-clone/assets/27728267/c638b216-4504-4d40-95d9-c0420a96f819)
 
 ## ⚡ Quickstart
-1. Clone the repo
-2. Open the `python` folder and use `uv sync` to create a virtual environment
-3. Run the python script `python hand_detection.py`
-4. Open the Godot project in the `godot` folder in the Godot Game Engine.
-5. Run the project.
+1. Clone the repo and open the `python` folder:
+
+```bash
+git clone https://github.com/trflorian/virtual-hand-clone.git && cd virtual-hand-clone/python
+```
+
+2. From the python folder run the python script `uv run hand_detection.py`, this will install all the required dependencies and then open a window with your webcam stream where your hands will be detected and tracked. Keep this window open.
+3. Open the Godot project in the `godot` folder in the Godot Game Engine and run it.
+4. The game should connect to your hand detection webcam stream and visualize the detected hands in 3D.
 
 ## 🗞️ Tutorial
 [Real-Time Hand Tracking in Godot — Creating Virtual 3D Clones of my Hands](https://medium.com/@flip.flo.dev/real-time-hand-tracking-in-godot-creating-virtual-3d-clones-of-my-hands-ecbfb73c2fcf)
