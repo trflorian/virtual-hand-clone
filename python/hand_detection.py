@@ -81,11 +81,11 @@ def run_hand_tracking_server(
                     continue
 
                 if category == "Left" and left_hand is None:
-                    left_hand = landmarks
+                    left_hand = [[round(coord, 3) for coord in coords] for coords in landmarks]
                     classified_hands.add(i)
                 
                 if category == "Right" and right_hand is None:
-                    right_hand = landmarks
+                    right_hand = [[round(coord, 3) for coord in coords] for coords in landmarks]
                     classified_hands.add(i)
 
             hand_coords = {
@@ -95,11 +95,14 @@ def run_hand_tracking_server(
 
             # Send the hand coordinates to the client
             encoded_coords = json.dumps(hand_coords)
+
+            # print(encoded_coords)
+
             client_socket.sendto(encoded_coords.encode(), (server_ip, server_port))
 
             # Draw the hand landmarks on the frame
             if results.hand_landmarks:
-                for hand_landmarks in results.hand_landmarks:
+                for hand_landmarks, handedness in zip(results.hand_landmarks, results.handedness):
                     mp_drawing.draw_landmarks(
                         frame_annotated,
                         hand_landmarks,
@@ -107,6 +110,34 @@ def run_hand_tracking_server(
                         landmark_drawing_spec=mp_drawing_styles.get_default_hand_landmarks_style(),
                         connection_drawing_spec=mp_drawing_styles.get_default_hand_connections_style(),
                     )
+
+                    # calcualte bbox for the hand
+                    pts = np.array([[int(landmark.x * frame.shape[1]), int(landmark.y * frame.shape[0])] for landmark in hand_landmarks], dtype=np.int32)
+                    bbox_xywh = cv2.boundingRect(pts)
+
+                    # scale bbox outwards by 10% from center
+                    perc_inc = 0.1
+                    bbox_xywh = (
+                        int(bbox_xywh[0] - bbox_xywh[2] * perc_inc),
+                        int(bbox_xywh[1] - bbox_xywh[3] * perc_inc),
+                        int(bbox_xywh[2] + 2 * bbox_xywh[2] * perc_inc),
+                        int(bbox_xywh[3] + 2 * bbox_xywh[3] * perc_inc),
+                    )
+
+                    # clamp bbox to be within the frame
+                    bbox_xywh = (
+                        max(0, bbox_xywh[0]),
+                        max(0, bbox_xywh[1]),
+                        min(frame.shape[1], bbox_xywh[2]),
+                        min(frame.shape[0], bbox_xywh[3]),
+                    )
+                    
+                    cv2.rectangle(frame_annotated, bbox_xywh, (255, 255, 255), 2)
+
+                    # label left/right handedness
+                    classification = handedness[0].category_name
+                    score = handedness[0].score
+                    cv2.putText(frame_annotated, f"{classification}: {score*100:.0f}%", (bbox_xywh[0], bbox_xywh[1] - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 255), 2)
             
             if show_landmarks and alpha < 1.0:
                 alpha += 0.05
@@ -120,7 +151,8 @@ def run_hand_tracking_server(
             frame_final = alpha * frame_annotated + (1 - alpha) * frame
             frame_final = frame_final.astype(np.uint8)
 
-            cv2.imshow("Hand Tracking", cv2.flip(frame_final, 1))
+            # cv2.imshow("Hand Tracking", cv2.flip(frame_final, 1))
+            cv2.imshow("Hand Tracking", frame_final)
             key = cv2.waitKey(1) & 0xFF
             if key == ord("q"):
                 break
