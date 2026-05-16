@@ -61,37 +61,24 @@ def run_hand_tracking_server(
             mp_image = mp.Image(image_format=mp.ImageFormat.SRGB, data=frame)
             results = landmarker.detect_for_video(mp_image, frame_timestamp_ms)
 
-            hand_candidates = sorted(
-                [
-                    (i, hd.score, hd.category_name, [(hl.x, hl.y, hl.z) for hl in hls])
-                    for i, (hls, hds) in enumerate(zip(results.hand_landmarks, results.handedness))
-                    for hd in hds
-                ],
-                key=lambda x: x[1],
-            )
-
+            # One entry per hand; use top handedness (same as drawing). Higher score first.
             left_hand = None
             right_hand = None
-            classified_hands = set()
+            for hls, hds in sorted(
+                zip(results.hand_landmarks, results.handedness),
+                key=lambda p: p[1][0].score,
+                reverse=True,
+            ):
+                lm = [[round(hl.x, 3), round(hl.y, 3), round(hl.z, 3)] for hl in hls]
+                label = hds[0].category_name
+                if label == "Left" and left_hand is None:
+                    left_hand = lm
+                elif label == "Right" and right_hand is None:
+                    right_hand = lm
+                if left_hand is not None and right_hand is not None:
+                    break
 
-            while len(hand_candidates) > 0:
-                i, _, category, landmarks = hand_candidates.pop(0)
-
-                if i in classified_hands:
-                    continue
-
-                if category == "Left" and left_hand is None:
-                    left_hand = [[round(coord, 3) for coord in coords] for coords in landmarks]
-                    classified_hands.add(i)
-                
-                if category == "Right" and right_hand is None:
-                    right_hand = [[round(coord, 3) for coord in coords] for coords in landmarks]
-                    classified_hands.add(i)
-
-            hand_coords = {
-                "left": left_hand,
-                "right": right_hand,
-            }
+            hand_coords = {"left": left_hand, "right": right_hand}
 
             # Send the hand coordinates to the client
             encoded_coords = json.dumps(hand_coords)
@@ -112,7 +99,13 @@ def run_hand_tracking_server(
                     )
 
                     # calcualte bbox for the hand
-                    pts = np.array([[int(landmark.x * frame.shape[1]), int(landmark.y * frame.shape[0])] for landmark in hand_landmarks], dtype=np.int32)
+                    pts = np.array(
+                        [
+                            [int(landmark.x * frame.shape[1]), int(landmark.y * frame.shape[0])]
+                            for landmark in hand_landmarks
+                        ],
+                        dtype=np.int32,
+                    )
                     bbox_xywh = cv2.boundingRect(pts)
 
                     # scale bbox outwards by 10% from center
@@ -131,21 +124,29 @@ def run_hand_tracking_server(
                         min(frame.shape[1], bbox_xywh[2]),
                         min(frame.shape[0], bbox_xywh[3]),
                     )
-                    
+
                     cv2.rectangle(frame_annotated, bbox_xywh, (255, 255, 255), 2)
 
                     # label left/right handedness
                     classification = handedness[0].category_name
                     score = handedness[0].score
-                    cv2.putText(frame_annotated, f"{classification}: {score*100:.0f}%", (bbox_xywh[0], bbox_xywh[1] - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 255), 2)
-            
+                    cv2.putText(
+                        frame_annotated,
+                        f"{classification}: {score * 100:.0f}%",
+                        (bbox_xywh[0], bbox_xywh[1] - 10),
+                        cv2.FONT_HERSHEY_SIMPLEX,
+                        0.5,
+                        (255, 255, 255),
+                        2,
+                    )
+
             if show_landmarks and alpha < 1.0:
                 alpha += 0.05
             elif not show_landmarks and alpha > 0.0:
                 alpha -= 0.05
-            
+
             alpha = np.clip(alpha, 0.0, 1.0)
-            
+
             frame = frame.astype(np.float32)
             frame_annotated = frame_annotated.astype(np.float32)
             frame_final = alpha * frame_annotated + (1 - alpha) * frame
