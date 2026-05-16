@@ -29,11 +29,6 @@ git clone https://github.com/trflorian/virtual-hand-clone.git && cd virtual-hand
 ## 🏗️ Architecture
 ![ArchitectureHandClone drawio](https://github.com/trflorian/virtual-hand-clone/assets/27728267/81ce01aa-d37e-46d8-bad4-6c65eae6936e)
 
-## 🖥️ Versions
-
-- Python 3.12
-- Godot v4.6
-
 ## 🎬 Demos
 ### Single Hand Tracking
 ![animation](https://github.com/trflorian/virtual-hand-clone/assets/27728267/b412dbdb-1082-450e-89dc-88f635e2bfd7)
