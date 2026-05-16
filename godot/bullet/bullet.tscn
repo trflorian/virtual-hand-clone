@@ -2,8 +2,19 @@
 
 [ext_resource type="Script" uid="uid://cn2bcsvsuinba" path="res://bullet/bullet.gd" id="1_k2aps"]
 
-[node name="Bullet" type="Node3D" unique_id=298630296]
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_k2aps"]
+albedo_color = Color(0.74509805, 0.47843137, 0.11764706, 1)
+
+[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_k2aps"]
+
+[node name="Bullet" type="RigidBody3D" unique_id=407606779]
+angular_damp = 5.0
 script = ExtResource("1_k2aps")
 
 [node name="CSGCylinder3D" type="CSGCylinder3D" parent="." unique_id=639596346]
 transform = Transform3D(1.0000001, 0, 0, 0, -4.371139e-08, -1.0000001, 0, 1, -4.3711392e-08, 0, 0, 0)
+material = SubResource("StandardMaterial3D_k2aps")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="." unique_id=1523792462]
+transform = Transform3D(1, 0, 0, 0, -4.371139e-08, -1, 0, 1, -4.371139e-08, 0, 0, 0)
+shape = SubResource("CapsuleShape3D_k2aps")

@@ -14,6 +14,7 @@ const HAND_LINES_MAPPING = [
 ]
 
 var landmark_sphere: PackedScene = preload("res://hand/hand_landmark.tscn")
+var bullet: PackedScene = preload("res://bullet/bullet.tscn")
 
 var hand_landmarks: Array[HandLandmark] = []
 var hand_lines: Array[MeshInstance3D] = []
@@ -37,6 +38,16 @@ func _create_hand_lines() -> void:
 
 func _process(_delta: float) -> void:
 	_update_hand_lines()
+
+func _input(event: InputEvent) -> void:
+	if event is InputEventKey and event.is_pressed():
+		var bullet_inst: Bullet = bullet.instantiate()
+		add_child(bullet_inst)
+		var dir = (hand_landmarks[8].global_position - hand_landmarks[7].global_position).normalized()
+		dir.z = 0
+		bullet_inst.direction = dir  
+		bullet_inst.global_position = hand_landmarks[8].global_position
+		bullet_inst.look_at(bullet_inst.global_position + dir, Vector3.UP)
 
 func _update_hand_lines() -> void:
 	for i in HAND_LINES_MAPPING.size():
