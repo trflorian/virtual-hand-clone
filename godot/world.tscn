@@ -35,4 +35,3 @@ show_left_hand = false
 
 [node name="Box" parent="." unique_id=1604582534 instance=ExtResource("2_fj7yv")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 12, 0)
-visible = false

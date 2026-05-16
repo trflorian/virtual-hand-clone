@@ -1,4 +1,4 @@
-[gd_scene load_steps=4 format=3 uid="uid://b03ewirciycji"]
+[gd_scene format=3 uid="uid://b03ewirciycji"]
 
 [ext_resource type="Script" path="res://hand/hand_landmark.gd" id="1_v35cl"]
 
